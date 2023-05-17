@@ -1,0 +1,13 @@
+co\unicauca\openmarket\commons\infra\Parameter.class
+co\unicauca\openmarket\commons\infra\Protocol.class
+co\unicauca\openmarket\commons\infra\JsonError.class
+com\unicauca\edu\co\openmarket\commons\infra\Parameter.class
+co\unicauca\openmarket\commons\infra\Parameters.class
+com\unicauca\edu\co\openmarket\commons\infra\Protocol.class
+com\unicauca\edu\co\openmarket\commons\domain\Category.class
+com\unicauca\edu\co\openmarket\commons\infra\Parameters.class
+co\unicauca\openmarket\commons\infra\Utilities.class
+com\unicauca\edu\co\openmarket\commons\infra\Utilities.class
+co\unicauca\openmarket\commons\domain\Product.class
+com\unicauca\edu\co\openmarket\commons\infra\JsonError.class
+com\unicauca\edu\co\openmarket\commons\domain\Product.class
