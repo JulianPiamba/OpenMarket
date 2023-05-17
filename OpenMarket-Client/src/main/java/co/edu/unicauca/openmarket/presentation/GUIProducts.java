@@ -1,8 +1,7 @@
 package co.edu.unicauca.openmarket.presentation;
 
-import co.edu.unicauca.openmarket.access.ProductAccessImplSockets;
 import co.edu.unicauca.openmarket.domain.Product;
-import co.edu.unicauca.openmarket.domain.service.ProductService;
+import co.edu.unicauca.openmarket.access.ProductAccessImplSockets;
 import co.edu.unicauca.openmarket.infra.Messages;
 import co.edu.unicauca.openmarket.presentation.commands.OMAddProductCommand;
 import co.edu.unicauca.openmarket.presentation.commands.OMCommand;
@@ -15,16 +14,16 @@ import javax.swing.JOptionPane;
  */
 public class GUIProducts extends javax.swing.JFrame {
 
-    private ProductService ProductService;
+    private ProductAccessImplSockets ProductAccess;
     private boolean addOption;
     private OMInvoker ominvoker;
 
     /**
      * Creates new form GUIProducts
      */
-    public GUIProducts(ProductService productService) {
+    public GUIProducts(ProductAccessImplSockets productAccess) {
         initComponents();
-        this.ProductService = productService;
+        this.ProductAccess = productAccess;
         // ProductService = new ProductService();
         ominvoker = new OMInvoker();
         stateInitial();
@@ -207,7 +206,7 @@ public class GUIProducts extends javax.swing.JFrame {
             return;
         }
         Long productId = Long.parseLong(txtId.getText());
-        Product prod = ProductService.findProductById(productId);
+        Product prod = ProductAccess.findById(productId);
         if (prod == null) {
             Messages.showMessageDialog("El identificador del producto no existe", "Error");
             txtId.setText("");
@@ -227,7 +226,7 @@ public class GUIProducts extends javax.swing.JFrame {
         }
         Long productId = Long.parseLong(id);
         if (Messages.showConfirmDialog("Está seguro que desea eliminar este producto?", "Confirmación") == JOptionPane.YES_NO_OPTION) {
-            if (ProductService.deleteProduct(productId)) {
+            if (ProductAccess.deleteProduct(productId)) {
                 Messages.showMessageDialog("Producto eliminado con éxito", "Atención");
                 stateInitial();
                 cleanControls();
@@ -236,9 +235,9 @@ public class GUIProducts extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindActionPerformed
-        GUIProductsFind instance = new GUIProductsFind(this, false, ProductService);
+        GUIProductsFind instance = new GUIProductsFind(this, false, ProductAccess);
         instance.setVisible(true);
-        ProductService.addObservador(instance);
+        ProductAccess.addObservador(instance);
     }//GEN-LAST:event_btnFindActionPerformed
 
     private void btnDeshacerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeshacerActionPerformed
@@ -321,7 +320,7 @@ public class GUIProducts extends javax.swing.JFrame {
         String name = txtName.getText().trim();
         String description = txtDescription.getText().trim();
         Product product = new Product(0L, name, description,0);
-        OMAddProductCommand comm = new OMAddProductCommand(product, ProductService);
+        OMAddProductCommand comm = new OMAddProductCommand(product, ProductAccess);
         ominvoker.addCommand(comm);
         ominvoker.execute();
         if (comm.result()) {
@@ -345,7 +344,7 @@ public class GUIProducts extends javax.swing.JFrame {
         prod.setName(txtName.getText().trim());
         prod.setDescription(txtDescription.getText().trim());
 
-        if (ProductService.editProduct(productId, prod)) {
+        if (ProductAccess.editProduct(productId, prod)) {
             Messages.showMessageDialog("Se editó con éxito", "Atención");
             cleanControls();
             stateInitial();

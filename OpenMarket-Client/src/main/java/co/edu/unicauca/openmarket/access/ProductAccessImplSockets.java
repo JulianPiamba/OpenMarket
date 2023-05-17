@@ -3,11 +3,12 @@ package co.edu.unicauca.openmarket.access;
 
 import co.edu.unicauca.openmarket.domain.Product;
 import co.edu.unicauca.openmarket.infra.OpenMarketSockets;
-//import co.edu.unicauca.openmarket.presentation.GUIProductsFind;
 import co.unicauca.openmarket.commons.infra.Protocol;
 import co.unicauca.openmarket.commons.infra.JsonError;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,49 +30,92 @@ public class ProductAccessImplSockets extends Observado implements IProductAcces
         mySocket = new OpenMarketSockets();
     }
     
-   // @Override
-        public boolean saveProduct(Product newProduct) throws Exception {
+   @Override
+    public boolean save(Product newProduct) throws Exception{
+        String jsonResponse = null;
         String requestJson = doSaveProductRequestJSON(newProduct);
-
-        try /*Socket mySocket = new Socket()*/ {
+        try {
             mySocket.connect();
-            String jsonResponse = mySocket.sendRequest(requestJson);
+            jsonResponse = mySocket.sendRequest(requestJson);
+            mySocket.disconnect();
 
-            if (jsonResponse == null) {
-                throw new Exception("No se pudo conectar con el servidor");
-            } else if (jsonResponse.contains("error")) {
+        } catch (IOException ex) {
+            Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.SEVERE, "No hubo conexión con el servidor", ex);
+            return false;
+        }
+        if (jsonResponse == null) {
+            throw new Exception("No se pudo conectar con el servidor");            
+        } else {
+            if (jsonResponse.contains("error")) {
                 Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.INFO, jsonResponse);
                 throw new Exception(extractMessages(jsonResponse));
             } else {
                 this.notificar();
                 return true;
             }
-        } catch (IOException ex) {
-            Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.SEVERE, "No hubo conexión con el servidor", ex);
-            return false;
         }
-      }
-    
-    
-    
+    }
 
-    /**
-     * Busca un Product. Utiliza socket para pedir el servicio al servidor
-     *
-     * @param id del producto
-     * @return Objeto Product
-     * @throws Exception cuando no pueda conectarse con el servidor
-     */
     @Override
-    public Product findProduct(String id) throws Exception {
-        String jsonResponse = null;
-        String requestJson = doFindProductRequestJson(id);
-        System.out.println(requestJson);
+    public boolean edit(Long id, Product product) {
+       String jsonResponse = null;
+        String requestJson = doEditProductRequestJSON(id, product);
         try {
             mySocket.connect();
             jsonResponse = mySocket.sendRequest(requestJson);
             mySocket.disconnect();
 
+        } catch (IOException ex) {
+            Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.SEVERE, "No hubo conexión con el servidor", ex);
+            return false;
+        }
+        if (jsonResponse == null) {
+            return false;
+        } else {
+            if (jsonResponse.contains("error")) {
+                Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.INFO, jsonResponse);
+                return false;
+            } else {
+                this.notificar();
+                return true;
+            }
+        } 
+    }
+
+    @Override
+    public boolean delete(Long id) throws Exception {
+        String jsonResponse = null;
+        String requestJson = doDeleteProductRequestJSON(id);
+        try {
+            mySocket.connect();
+            jsonResponse = mySocket.sendRequest(requestJson);
+            mySocket.disconnect();
+        } catch (IOException ex) {
+            Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.SEVERE, "No hubo conexión con el servidor", ex);
+            throw new Exception("No hubo conexión con el servidor");
+        }
+        if (jsonResponse == null) {
+            return false;
+        } else {
+            if (jsonResponse.contains("error")) {
+                Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.INFO, jsonResponse);
+                throw new Exception(extractMessages(jsonResponse));
+            } else {
+                this.notificar();
+                return true;
+            }
+        }
+    }
+
+    @Override
+    public Product findById(Long id) throws Exception{
+        String jsonResponse = null;
+        String requestJson = doFindIdProductRequestJSON(id);
+        System.out.println(requestJson);
+        try {
+            mySocket.connect();
+            jsonResponse = mySocket.sendRequest(requestJson);
+            mySocket.disconnect();
         } catch (IOException ex) {
             Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.SEVERE, "No hubo conexión con el servidor", ex);
         }
@@ -83,51 +127,139 @@ public class ProductAccessImplSockets extends Observado implements IProductAcces
                 Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.INFO, jsonResponse);
                 throw new Exception(extractMessages(jsonResponse));
             } else {
-                //Encontró el Product
+                //Encontró la categoría
                 Product product = jsonToProduct(jsonResponse);
                 Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.INFO, "Lo que va en el JSon: ("+jsonResponse.toString()+ ")");
                 return product;
             }
         }
     }
-    
 
-    /**
-     * Crea un Customer. Utiliza socket para pedir el servicio al servidor
-     *
-     * @param customer cliente de la agencia de viajes
-     * @return devuelve la cedula del cliente creado
-     * @throws Exception error crear el cliente
-     */
     @Override
-    public String createProduct(Product product) throws Exception {
+    public Product findByName(String name) throws Exception {
         String jsonResponse = null;
-        String requestJson = doCreateProductRequestJson(product);
+        String requestJson = doFindNameProductRequestJSON(name);
+        System.out.println(requestJson);
         try {
             mySocket.connect();
             jsonResponse = mySocket.sendRequest(requestJson);
             mySocket.disconnect();
-
         } catch (IOException ex) {
             Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.SEVERE, "No hubo conexión con el servidor", ex);
         }
         if (jsonResponse == null) {
-            throw new Exception("No se pudo conectar con el servidor");
+            throw new Exception("No se pudo conectar con el servidor. Revise la red o que el servidor esté escuchando. ");
         } else {
-
             if (jsonResponse.contains("error")) {
-                //Devolvió algún error                
+                //Devolvió algún error
                 Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.INFO, jsonResponse);
                 throw new Exception(extractMessages(jsonResponse));
             } else {
-                //Agregó correctamente, devuelve la cedula del customer 
-                return product.getProductId().toString();
+                //Encontró el producto
+                Product product = jsonToProduct(jsonResponse);
+                Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.INFO, "Lo que va en el JSon: ("+jsonResponse.toString()+ ")");
+                return product;
             }
-
         }
-
     }
-    /**
+
+    @Override
+    public List<Product> findAll() throws Exception {
+        String jsonResponse = null;
+        String requestJson = doFindAllProductRequestJson();
+        try {
+            mySocket.connect();
+            jsonResponse = mySocket.sendRequest(requestJson);
+            mySocket.disconnect();
+        } catch (IOException ex) {
+            Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.SEVERE, "No hubo conexión con el servidor", ex);
+        }
+        if (jsonResponse == null) {
+            throw new Exception("No se pudo conectar con el servidor. Revise la red o que el servidor esté escuchando. ");
+        } else {
+            if (jsonResponse.contains("error")) {
+                Logger.getLogger(ProductAccessImplSockets.class.getName()).log(Level.INFO, jsonResponse);
+                throw new Exception(extractMessages(jsonResponse));
+            } else {
+                Type type = new TypeToken<List<Product>>() {}.getType();
+                List<Product> products = new Gson().fromJson(jsonResponse, type);
+                return products;
+            }
+        }
+    }
+    private String doSaveProductRequestJSON(Product product){
+        
+        Protocol protocol = new Protocol();
+        protocol.setResource("product");
+        protocol.setAction("post");
+        protocol.addParameter("id", product.getProductId().toString());
+        protocol.addParameter("name", product.getName());
+        protocol.addParameter("description", product.getDescription());
+
+        Gson gson = new Gson();
+        String requestJson = gson.toJson(protocol);
+        return requestJson;
+    }
+
+    private String doEditProductRequestJSON(Long Id, Product product){
+        
+        Protocol protocol = new Protocol();
+        protocol.setResource("product");
+        protocol.setAction("put");
+        protocol.addParameter("id", Id.toString());
+        protocol.addParameter("name", product.getName());
+        protocol.addParameter("description", product.getDescription());
+        Gson gson = new Gson();
+        String requestJson = gson.toJson(protocol);
+        return requestJson;
+    }
+
+    private String doDeleteProductRequestJSON(Long productId){
+        Protocol protocol = new Protocol();
+        protocol.setResource("product");
+        protocol.setAction("delete");
+        protocol.addParameter("id", productId.toString());
+
+        Gson gson = new Gson();
+        String requestJson = gson.toJson(protocol);
+        return requestJson;
+    }
+
+    private String doFindAllProductRequestJson(){
+        Protocol protocol = new Protocol();
+        protocol.setResource("product");
+        protocol.setAction("getall");
+        Gson gson = new Gson();
+        String requestJson = gson.toJson(protocol);
+        return requestJson;
+    }
+
+    private String doFindIdProductRequestJSON(Long productId){
+        Protocol protocol = new Protocol();
+        protocol.setResource("product");
+        protocol.setAction("get");
+        protocol.addParameter("id", productId.toString());
+
+        Gson gson = new Gson();
+        String requestJson = gson.toJson(protocol);
+
+        return requestJson;
+    }
+
+    private String doFindNameProductRequestJSON(String name){
+
+        Protocol protocol = new Protocol();
+        protocol.setResource("product");
+        protocol.setAction("get");
+        protocol.addParameter("name", name);
+
+        Gson gson = new Gson();
+        String requestJson = gson.toJson(protocol);
+
+        return requestJson;
+    }
+    
+     /**
      * Extra los mensajes de la lista de errores
      * @param jsonResponse lista de mensajes json
      * @return Mensajes de error
@@ -152,110 +284,18 @@ public class ProductAccessImplSockets extends Observado implements IProductAcces
         JsonError[] error = gson.fromJson(jsonError, JsonError[].class);
         return error;
     }
-
-    /**
-     * Crea una solicitud json para ser enviada por el socket
-     *
-     *
-     * @param idProduct identificación del Product
-     * @return solicitud de consulta del cliente en formato Json, algo como:
-     * {"resource":"customer","action":"get","parameters":[{"name":"id","value":"98000001"}]}
-     */
-    private String doFindProductRequestJson(String idProduct) {
-
-        Protocol protocol = new Protocol();
-        protocol.setResource("product");
-        protocol.setAction("get");
-        protocol.addParameter("id", idProduct);
-
-        Gson gson = new Gson();
-        String requestJson = gson.toJson(protocol);
-
-        return requestJson;
-    }
-
-    /**
-     * Crea la solicitud json de creación del customer para ser enviado por el
-     * socket
-     *
-     * @param Product objeto Product
-     * @return devulve algo como:
-     * {"resource":"customer","action":"post","parameters":[{"name":"id","value":"980000012"},{"name":"fistName","value":"Juan"},...}]}
-     */
-    private String doCreateProductRequestJson(Product product) {
-
-        Protocol protocol = new Protocol();
-        protocol.setResource("product");
-        protocol.setAction("post");
-        protocol.addParameter("id", product.getProductId().toString());
-        protocol.addParameter("fistName", product.getName());
-        protocol.addParameter("lastName", product.getDescription());
-        protocol.addParameter("address", product.getCategory().toString());
-        
-        Gson gson = new Gson();
-        String requestJson = gson.toJson(protocol);
-        return requestJson;
-    }
-
-    /**
-     * Convierte jsonProduct, proveniente del server socket, de json a un
-     * objeto Product
-     *
-     * @param jsonProduct objeto cliente en formato json
-     */
-    private Product jsonToProduct(String jsonProduct) {
-
-        Gson gson = new Gson();
-        Product product = gson.fromJson(jsonProduct, Product.class);
-        return product;
-
-    }
-
-   
-        
-         private String doSaveProductRequestJSON(Product product){
-        
-        Protocol protocol = new Protocol();
-        protocol.setResource("product");
-        protocol.setAction("post");
-        protocol.addParameter("id", product.getProductId().toString());
-        protocol.addParameter("name", product.getName());
-        protocol.addParameter("description", product.getDescription());
-
-        Gson gson = new Gson();
-        String requestJson = gson.toJson(protocol);
-        return requestJson;
-    }
     
-    
-   /* public Product findProductById(Long productId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    /**
+     * Convierte jsonCustomer, proveniente del server socket, de json a un
+     * objeto Customer
+     *
+     * @param jsonCustomer objeto cliente en formato json
+     */
+    private Product jsonToProduct(String jsonCustomer) {
 
-    public boolean deleteProduct(Long productId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+        Gson gson = new Gson();
+        Product customer = gson.fromJson(jsonCustomer, Product.class);
+        return customer;
 
-    public boolean editProduct(Long productId, Product prod) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
-    public List<Product> findAllProducts() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-    */
-
-    public Product findProductById(Long productId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public boolean deleteProduct(Long productId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public boolean editProduct(Long productId, Product prod) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-    
-
 }
