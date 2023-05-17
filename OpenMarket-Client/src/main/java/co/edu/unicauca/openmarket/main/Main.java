@@ -20,7 +20,7 @@ public class Main {
     public static void main(String[] args) {
         
         IProductRepository repository = Factory.getInstance().getRepository("default");
-        ProductService productService = new ProductService(repository);
+        ProductAccessImplSockets productService = new ProductAccessImplSockets();
         
         GUIProducts instance = new GUIProducts(productService);
         instance.setVisible(true);
