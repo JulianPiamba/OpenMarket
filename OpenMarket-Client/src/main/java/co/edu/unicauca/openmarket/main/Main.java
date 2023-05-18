@@ -19,14 +19,15 @@ public class Main {
      */
     public static void main(String[] args) {
         
-        IProductRepository repository = Factory.getInstance().getRepository("default");
-        ProductAccessImplSockets productService = new ProductAccessImplSockets();
+       // IProductRepository repository = Factory.getInstance().getRepository("default");
+        ProductAccessImplSockets productAccess = new ProductAccessImplSockets();
         
-        GUIProducts instance = new GUIProducts(productService);
+        GUIProducts instance = new GUIProducts();
+        instance.setProductAccess(productAccess);
         instance.setVisible(true);
-        GUIProductsFind instance2 = new GUIProductsFind(null,false,productService);
+        GUIProductsFind instance2 = new GUIProductsFind(null,false,productAccess);
         instance2.setVisible(true);
-        productService.addObservador(instance2);
+        productAccess.addObservador(instance2);
     }
     
 }

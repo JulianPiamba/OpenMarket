@@ -1,6 +1,8 @@
 package co.unicauca.openmarket.server.access;
 
-import co.unicauca.openmarket.commons.infra.Utilities;
+import co.unicauca.strategyserver.helpers.Utilities;
+
+
 
 /**
  * Fabrica que se encarga de instanciar un repositorio concreto

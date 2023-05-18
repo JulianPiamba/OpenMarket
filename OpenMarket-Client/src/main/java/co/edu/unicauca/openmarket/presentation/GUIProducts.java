@@ -1,11 +1,13 @@
 package co.edu.unicauca.openmarket.presentation;
 
-import co.edu.unicauca.openmarket.domain.Product;
 import co.edu.unicauca.openmarket.access.ProductAccessImplSockets;
 import co.edu.unicauca.openmarket.infra.Messages;
 import co.edu.unicauca.openmarket.presentation.commands.OMAddProductCommand;
 import co.edu.unicauca.openmarket.presentation.commands.OMCommand;
 import co.edu.unicauca.openmarket.presentation.commands.OMInvoker;
+import com.unicauca.edu.co.openmarket.commons.domain.Product;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -13,18 +15,27 @@ import javax.swing.JOptionPane;
  * @author Libardo Pantoja
  */
 public class GUIProducts extends javax.swing.JFrame {
-
-    private ProductAccessImplSockets ProductAccess;
+    
+    private ProductAccessImplSockets productAccess;
     private boolean addOption;
     private OMInvoker ominvoker;
+    private long id=0L;
+
+    public ProductAccessImplSockets getProductAccess() {
+        return productAccess;
+    }
+
+    public void setProductAccess(ProductAccessImplSockets productAccess) {
+        this.productAccess = productAccess;
+    }
 
     /**
      * Creates new form GUIProducts
      */
-    public GUIProducts(ProductAccessImplSockets productAccess) {
+    public GUIProducts() {
         initComponents();
-        this.ProductAccess = productAccess;
-        // ProductService = new ProductService();
+        //this.ProductAccess = productAccess;
+        productAccess = new ProductAccessImplSockets();
         ominvoker = new OMInvoker();
         stateInitial();
 
@@ -185,8 +196,12 @@ public class GUIProducts extends javax.swing.JFrame {
             return;
         }
         if (addOption) {
-            //Agregar
-            addProduct();
+            try {
+                //Agregar
+                addProduct();
+            } catch (Exception ex) {
+                Logger.getLogger(GUIProducts.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
         } else {
             //Editar
@@ -202,18 +217,22 @@ public class GUIProducts extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void txtIdFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtIdFocusLost
-        if (txtId.getText().trim().equals("")) {
-            return;
-        }
-        Long productId = Long.parseLong(txtId.getText());
-        Product prod = ProductAccess.findById(productId);
-        if (prod == null) {
-            Messages.showMessageDialog("El identificador del producto no existe", "Error");
-            txtId.setText("");
-            txtId.requestFocus();
-        } else {
-            txtName.setText(prod.getName());
-            txtDescription.setText(prod.getDescription());
+        try {
+            if (txtId.getText().trim().equals("")) {
+                return;
+            }
+            Long productId = Long.parseLong(txtId.getText());
+            Product prod = productAccess.findById(productId);
+            if (prod == null) {
+                Messages.showMessageDialog("El identificador del producto no existe", "Error");
+                txtId.setText("");
+                txtId.requestFocus();
+            } else {
+                txtName.setText(prod.getName());
+                txtDescription.setText(prod.getDescription());
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(GUIProducts.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_txtIdFocusLost
 
@@ -226,18 +245,23 @@ public class GUIProducts extends javax.swing.JFrame {
         }
         Long productId = Long.parseLong(id);
         if (Messages.showConfirmDialog("Está seguro que desea eliminar este producto?", "Confirmación") == JOptionPane.YES_NO_OPTION) {
-            if (ProductAccess.deleteProduct(productId)) {
-                Messages.showMessageDialog("Producto eliminado con éxito", "Atención");
-                stateInitial();
-                cleanControls();
+            try {
+                if (productAccess.delete(productId)) {
+                    Messages.showMessageDialog("Producto eliminado con éxito", "Atención");
+                    stateInitial();
+                    cleanControls();
+                    productAccess.notificar();
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(GUIProducts.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindActionPerformed
-        GUIProductsFind instance = new GUIProductsFind(this, false, ProductAccess);
+        GUIProductsFind instance = new GUIProductsFind(this, false, productAccess);
         instance.setVisible(true);
-        ProductAccess.addObservador(instance);
+        productAccess.addObservador(instance);
     }//GEN-LAST:event_btnFindActionPerformed
 
     private void btnDeshacerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeshacerActionPerformed
@@ -316,17 +340,19 @@ public class GUIProducts extends javax.swing.JFrame {
         txtDescription.setText("");
     }
 
-    private void addProduct() {
+    private void addProduct() throws Exception{
         String name = txtName.getText().trim();
         String description = txtDescription.getText().trim();
-        Product product = new Product(0L, name, description,0);
-        OMAddProductCommand comm = new OMAddProductCommand(product, ProductAccess);
+        Product product = new Product(id, name, description,0);
+        OMAddProductCommand comm = new OMAddProductCommand(product, productAccess);
         ominvoker.addCommand(comm);
         ominvoker.execute();
         if (comm.result()) {
             Messages.showMessageDialog("Se grabó con éxito", "Atención");
             cleanControls();
             stateInitial();
+            id++;
+            productAccess.notificar();
         } else {
             Messages.showMessageDialog("Error al grabar, lo siento mucho", "Atención");
         }
@@ -344,10 +370,11 @@ public class GUIProducts extends javax.swing.JFrame {
         prod.setName(txtName.getText().trim());
         prod.setDescription(txtDescription.getText().trim());
 
-        if (ProductAccess.editProduct(productId, prod)) {
+        if (productAccess.edit(productId, prod)) {
             Messages.showMessageDialog("Se editó con éxito", "Atención");
             cleanControls();
             stateInitial();
+            productAccess.notificar();
         } else {
             Messages.showMessageDialog("Error al editar, lo siento mucho", "Atención");
         }

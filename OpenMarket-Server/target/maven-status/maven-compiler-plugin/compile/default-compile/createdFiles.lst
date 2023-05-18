@@ -4,7 +4,5 @@ co\unicauca\openmarket\server\infra\tcpip\OpenMarketServer.class
 co\unicauca\openmarket\server\access\IProductRepository.class
 co\unicauca\openmarket\server\access\ProductRepositoryImplMysql.class
 co\unicauca\openmarket\server\domain\services\ProductService.class
-co\unicauca\openmarket\server\infra\web\OpenMarketWebHandler.class
-co\unicauca\openmarket\server\infra\web\WebServer.class
 co\unicauca\openmarket\server\access\ProductRepositoryImplArrays.class
 co\unicauca\openmarket\server\app\OpenMarketApplication.class
