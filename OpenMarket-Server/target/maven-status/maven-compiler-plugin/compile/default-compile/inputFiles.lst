@@ -1,10 +1,8 @@
-C:\Users\Pipe\Desktop\ingSISTEMAS\IngenieriaSoftware2\Parcial1\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\access\ProductRepositoryImplMysql.java
-C:\Users\Pipe\Desktop\ingSISTEMAS\IngenieriaSoftware2\Parcial1\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\app\OpenMarketApplication.java
-C:\Users\Pipe\Desktop\ingSISTEMAS\IngenieriaSoftware2\Parcial1\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\infra\tcpip\OpenMarketServer.java
-C:\Users\Pipe\Desktop\ingSISTEMAS\IngenieriaSoftware2\Parcial1\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\domain\services\ProductService.java
-C:\Users\Pipe\Desktop\ingSISTEMAS\IngenieriaSoftware2\Parcial1\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\infra\web\OpenMarketWebHandler.java
-C:\Users\Pipe\Desktop\ingSISTEMAS\IngenieriaSoftware2\Parcial1\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\access\Factory.java
-C:\Users\Pipe\Desktop\ingSISTEMAS\IngenieriaSoftware2\Parcial1\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\access\ProductRepositoryImplArrays.java
-C:\Users\Pipe\Desktop\ingSISTEMAS\IngenieriaSoftware2\Parcial1\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\infra\web\WebServer.java
-C:\Users\Pipe\Desktop\ingSISTEMAS\IngenieriaSoftware2\Parcial1\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\access\IProductRepository.java
-C:\Users\Pipe\Desktop\ingSISTEMAS\IngenieriaSoftware2\Parcial1\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\infra\tcpip\OpenMarketHandler.java
+C:\Users\nico_\OneDrive\Escritorio\Jhossef\ing de software\OpenMarket\OpenMarket\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\access\ProductRepositoryImplMysql.java
+C:\Users\nico_\OneDrive\Escritorio\Jhossef\ing de software\OpenMarket\OpenMarket\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\app\OpenMarketApplication.java
+C:\Users\nico_\OneDrive\Escritorio\Jhossef\ing de software\OpenMarket\OpenMarket\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\access\Factory.java
+C:\Users\nico_\OneDrive\Escritorio\Jhossef\ing de software\OpenMarket\OpenMarket\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\access\IProductRepository.java
+C:\Users\nico_\OneDrive\Escritorio\Jhossef\ing de software\OpenMarket\OpenMarket\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\infra\tcpip\OpenMarketHandler.java
+C:\Users\nico_\OneDrive\Escritorio\Jhossef\ing de software\OpenMarket\OpenMarket\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\infra\tcpip\OpenMarketServer.java
+C:\Users\nico_\OneDrive\Escritorio\Jhossef\ing de software\OpenMarket\OpenMarket\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\access\ProductRepositoryImplArrays.java
+C:\Users\nico_\OneDrive\Escritorio\Jhossef\ing de software\OpenMarket\OpenMarket\OpenMarket-Server\src\main\java\co\unicauca\openmarket\server\domain\services\ProductService.java

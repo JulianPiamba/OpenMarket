@@ -4,11 +4,13 @@
  */
 package co.edu.unicauca.openmarket.presentation.commands;
 
-import co.edu.unicauca.openmarket.domain.Product;
+
 import co.edu.unicauca.openmarket.domain.service.ProductService;
 import co.edu.unicauca.openmarket.access.ProductAccessImplSockets;
+import com.unicauca.edu.co.openmarket.commons.domain.Product;
 import java.util.List;
-
+import java.util.logging.Logger;
+import java.util.logging.Level;
 /**
  *
  * @author ahurtado
@@ -16,9 +18,9 @@ import java.util.List;
 public class OMAddProductCommand extends OMCommand {
 
     private Product pP;
-    private ProductService pS;
-    boolean result=false;
-    public OMAddProductCommand(Product pP, ProductService  pS){
+    private ProductAccessImplSockets pS;
+    boolean result=true;
+    public OMAddProductCommand(Product pP, ProductAccessImplSockets pS){
         this.pP = pP;
         this.pS = pS;
     }
@@ -26,19 +28,31 @@ public class OMAddProductCommand extends OMCommand {
     
     @Override
     public void make() {
-       // result = pS.saveProduct(pP.getName(), pP.getDescription());
+        try {
+            result = pS.save(pP);
+        } catch (Exception ex) {
+            Logger.getLogger(OMAddProductCommand.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
-    public void unmake() {
-        List<Product> products = pS.findAllProducts();
+   public void unmake() {
+        List<Product> products = null;
+        try {
+            products = pS.findAll();
+        } catch (Exception ex) {
+            Logger.getLogger(OMAddProductCommand.class.getName()).log(Level.SEVERE, null, ex);
+        }
         for(Product each: products){
             if(each.getName().equals(pP.getName())){
-                result = pS.deleteProduct(each.getProductId());
+                try {
+                    result = pS.delete(each.getProductId());
+                } catch (Exception ex) {
+                    Logger.getLogger(OMAddProductCommand.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }
-    
     public boolean result(){
         return result;
     }

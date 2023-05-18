@@ -1,0 +1,14 @@
+-------------------------------------------------------------------------------
+Test set: co.unicauca.openmarket.server.domain.ProductServiceTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.025 sec <<< FAILURE!
+co.unicauca.openmarket.server.domain.ProductServiceTest.testCreateProduct()  Time elapsed: 0.022 sec  <<< FAILURE!
+java.lang.NullPointerException: Cannot invoke "String.isEmpty()" because "type" is null
+	at co.unicauca.openmarket.server.access.Factory.getRepository(Factory.java:39)
+	at co.unicauca.openmarket.server.domain.ProductServiceTest.testCreateProduct(ProductServiceTest.java:44)
+
+co.unicauca.openmarket.server.domain.ProductServiceTest.testFindProduct()  Time elapsed: 0 sec  <<< FAILURE!
+java.lang.NullPointerException: Cannot invoke "String.isEmpty()" because "type" is null
+	at co.unicauca.openmarket.server.access.Factory.getRepository(Factory.java:39)
+	at co.unicauca.openmarket.server.domain.ProductServiceTest.testFindProduct(ProductServiceTest.java:22)
+

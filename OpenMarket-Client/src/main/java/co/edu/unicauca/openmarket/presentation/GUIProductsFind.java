@@ -1,15 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package co.edu.unicauca.openmarket.presentation;
 
 import co.edu.unicauca.openmarket.access.ProductAccessImplSockets;
-import co.edu.unicauca.openmarket.domain.Product;
-import co.edu.unicauca.openmarket.domain.service.ProductService;
-
+import com.unicauca.edu.co.openmarket.commons.domain.Product;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import reloj.frameworkobsobs.Observador;
 
@@ -18,15 +13,16 @@ import reloj.frameworkobsobs.Observador;
  * @author Libardo Pantoja
  */
 public class GUIProductsFind extends javax.swing.JDialog implements Observador{
-    private ProductService productService;
+    private ProductAccessImplSockets productAccess;
     /**
      * Creates new form GUIProductsFind
      */
-    public GUIProductsFind(java.awt.Frame parent, boolean modal,ProductService productService) {
+    public GUIProductsFind(java.awt.Frame parent, boolean modal,ProductAccessImplSockets productAccess) {
         super(parent, modal);
         initComponents();
         initializeTable();
-        this.productService = productService;
+        this.productAccess = productAccess;
+        //this.productService = productService;
         setLocationRelativeTo(null); //centrar al ventana
     }
     
@@ -39,7 +35,7 @@ public class GUIProductsFind extends javax.swing.JDialog implements Observador{
         ));
     }
     
-        private void fillTable(List<Product> listProducts) {
+    private void fillTable(List<Product> listProducts) {
         initializeTable();
         DefaultTableModel model = (DefaultTableModel) tblProducts.getModel();
 
@@ -113,6 +109,11 @@ public class GUIProductsFind extends javax.swing.JDialog implements Observador{
         pnlNorth.add(txtSearch);
 
         btnSearch.setText("Buscar");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
         pnlNorth.add(btnSearch);
 
         btnSearchAll.setText("Buscar Todos");
@@ -142,8 +143,46 @@ public class GUIProductsFind extends javax.swing.JDialog implements Observador{
         this.dispose();
     }//GEN-LAST:event_btnCloseActionPerformed
 
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        initializeTable();
+        DefaultTableModel model = (DefaultTableModel) tblProducts.getModel();
+        Object rowData[] = new Object[3];//No columnas
+        Product objProduct = null;
+        if(this.rdoId.isSelected()){
+            try {
+                objProduct = productAccess.findById(Long.parseLong(this.txtSearch.getText()));
+                
+                rowData[0] = objProduct.getProductId();
+                rowData[1] = objProduct.getName();
+                rowData[2] = objProduct.getDescription();
+                
+                model.addRow(rowData);
+                
+            } catch (Exception ex) {
+                Logger.getLogger(GUIProductsFind.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        else{
+            try {
+                objProduct = productAccess.findByName(this.txtSearch.getText());
+                rowData[0] = objProduct.getProductId();
+                rowData[1] = objProduct.getName();
+                rowData[2] = objProduct.getDescription();
+                
+                model.addRow(rowData);
+                
+            } catch (Exception ex) {
+                Logger.getLogger(GUIProductsFind.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_btnSearchActionPerformed
+
     private void btnSearchAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchAllActionPerformed
-        //fillTable(productService.findAllProducts());
+        try {
+            fillTable(productAccess.findAll());
+        } catch (Exception ex) {
+            Logger.getLogger(GUIProductsFind.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnSearchAllActionPerformed
 
  
@@ -163,9 +202,13 @@ public class GUIProductsFind extends javax.swing.JDialog implements Observador{
     private javax.swing.JTable tblProducts;
     private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
-
+    
     @Override
     public void actualizar() {
-        //fillTable(productService.findAllProducts());
+        try {
+            fillTable(productAccess.findAll() );
+        } catch (Exception ex) {
+            Logger.getLogger(GUIProductsFind.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

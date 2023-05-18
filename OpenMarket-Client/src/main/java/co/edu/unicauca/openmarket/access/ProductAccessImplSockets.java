@@ -1,12 +1,12 @@
-
 package co.edu.unicauca.openmarket.access;
 
-import co.edu.unicauca.openmarket.domain.Product;
+
 import co.edu.unicauca.openmarket.infra.OpenMarketSockets;
 import co.unicauca.openmarket.commons.infra.Protocol;
 import co.unicauca.openmarket.commons.infra.JsonError;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.unicauca.edu.co.openmarket.commons.domain.Product;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;

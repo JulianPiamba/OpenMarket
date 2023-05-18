@@ -20,13 +20,12 @@ public class OpenMarketServer {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-       
         ServerSocketMultiThread myServer = new ServerSocketMultiThread(5000);
         OpenMarketHandler myHandler = new OpenMarketHandler();
-        myHandler.setService(new ProductService(new ProductRepositoryImplArrays()));
+        myHandler.setServiceP(new ProductService(new ProductRepositoryImplArrays()));
         myServer.setServerHandler(myHandler);
         myServer.startServer();
+        myHandler.getServiceP().addObservador(myHandler);
     }
     
 }
