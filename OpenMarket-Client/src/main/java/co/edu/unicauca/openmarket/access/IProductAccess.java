@@ -1,5 +1,7 @@
 package co.edu.unicauca.openmarket.access;
-import co.edu.unicauca.openmarket.domain.Product;
+
+
+import com.unicauca.edu.co.openmarket.commons.domain.Product;
 import java.util.List;
 
 /**
@@ -20,24 +22,4 @@ public interface IProductAccess {
     Product findByName (String name) throws Exception;
     
     List<Product> findAll() throws Exception;
-    
-    /**
-     * Buscar un cliente utilizando un socket
-     *
-     * @param id del producto
-     * @return objeto cliente
-     * @throws Exception error al buscar un cliente
-     *
-    public Product findProduct(String id) throws Exception;
-
-    /**
-     * Crea un Product
-     *
-     * @param Product producto de openMarket
-     * @return devuelve el id del producto
-     * @throws Exception error crear el producto
-     *
-
-    public String createProduct(Product product) throws Exception;
-    */
 }

@@ -29,10 +29,6 @@ public class ProductArrayService {
       ) {
         p.setName(product.getName());
         p.setPrice(product.getPrice());
-        p.setCategory(product.getCategory());
-        p.setDescription(product.getDescription());
-        p.setLocation(product.getLocation());
-        p.setUser(product.getUser());
 
         prod = p;
         break;

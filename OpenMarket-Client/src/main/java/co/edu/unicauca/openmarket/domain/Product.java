@@ -16,11 +16,6 @@ public class Product {
     
     private double price;
     
-    private Category category;
-    
-    private Location location;
-    
-    private User user;
 
     public Product(Long productId, String name, String description, double price) {
         this.productId = productId;
@@ -63,31 +58,4 @@ public class Product {
     public void setPrice(double price) {
         this.price = price;
     }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-    
-
-
 }
